@@ -1,0 +1,24 @@
+# This is the name of our main CI pipeline
+name: 2. CI Pipeline
+
+on:
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  # We'll name this job "build"
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Check out the code
+      # This 'uses:' keyword tells Actions to use a pre-built script
+      # 'actions/checkout@v4' is the official action to download your repo code
+      - name: 1. Checkout Code
+        uses: actions/checkout@v4
+
+      # Step 2: List files *after* checking them out
+      # This 'run:' command is the same as before
+      - name: 2. List files after checkout
+        run: ls -la
