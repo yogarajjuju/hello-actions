@@ -1,24 +1,54 @@
-# This is the name of our main CI pipeline
-name: 2. CI Pipeline
+name: 3. CI/CD Pipeline with Pages Deploy
 
 on:
   push:
     branches: [ "main" ]
   workflow_dispatch:
 
+# NEW: Add permissions for the workflow
+permissions:
+  contents: read
+  pages: write      # Allows the workflow to write to GitHub Pages
+  id-token: write   # Allows the workflow to authenticate for deployment
+
 jobs:
-  # We'll name this job "build"
+  # Job 1: Build the site (in our case, just prepare the file)
   build:
     runs-on: ubuntu-latest
-
     steps:
-      # Step 1: Check out the code
-      # This 'uses:' keyword tells Actions to use a pre-built script
-      # 'actions/checkout@v4' is the official action to download your repo code
       - name: 1. Checkout Code
         uses: actions/checkout@v4
 
-      # Step 2: List files *after* checking them out
-      # This 'run:' command is the same as before
-      - name: 2. List files after checkout
-        run: ls -la
+      - name: 2. Setup Pages
+        # This action configures the Pages environment
+        uses: actions/configure-pages@v4
+
+      - name: 3. Upload artifact
+        # This action takes our website files and uploads them as an artifact
+        # The 'deploy-pages' job below will download this artifact.
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # This is the folder to upload. '.' means the current folder.
+          path: '.' 
+
+  # Job 2: Deploy the site
+  deploy:
+    # This job 'needs' (waits for) the 'build' job to finish successfully
+    needs: build
+
+    # NEW: Grant permissions specifically for this deployment job
+    permissions:
+      pages: write
+      id-token: write
+
+    # NEW: Define the environment this deploys to (a GitHub Pages standard)
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }} # This will output the final URL
+
+    runs-on: ubuntu-latest
+    steps:
+      - name: 1. Deploy to GitHub Pages
+        # This is the official action to deploy the artifact to Pages
+        uses: actions/deploy-pages@v4
+        id: deployment # We give this step an ID to reference its output
