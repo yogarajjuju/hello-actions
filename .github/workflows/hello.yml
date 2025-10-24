@@ -1,0 +1,23 @@
+# This is the name of your workflow
+name: Hello World Workflow
+
+# This is the event that triggers the workflow
+# It will run on every push to any branch
+on: [push]
+
+# This groups all the jobs
+jobs:
+  # This is the ID of the job (you can name it anything)
+  say-hello:
+    # This is the virtual machine it will run on
+    runs-on: ubuntu-latest
+
+    # This lists all the steps in the job
+    steps:
+      # Step 1: Print a message
+      - name: Print Hello
+        run: echo "Hello, World! I am running an automated workflow!"
+
+      # Step 2: Print another message
+      - name: Print Goodbye
+        run: echo "Automation is complete. Goodbye!"
